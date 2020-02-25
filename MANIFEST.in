@@ -1,0 +1,2 @@
+recursive-include libs/windows *.dll
+recursive-include libs/linux *.so
