@@ -1,13 +1,34 @@
 import os
 from ctypes.util import find_library
 from ctypes import cdll
+import ctypes
+import platform
 
-os.environ['PATH'] += 'C:\PythonLib;'
-lib_dll_path = find_library('ExampleDLL')
-dll_handle = cdll.LoadLibrary(lib_dll_path)
-print(dll_handle)
 
 class LibWrapper(object):
+	MAJOR = 1
+	MINOR = 0
+	BUGFIX = 0
+	VERSION = '{}.{}.{}'.format(MAJOR, MINOR, BUGFIX)
+	PLATFORM = 'x{}'.format(ctypes.sizeof(ctypes.c_voidp) * 8)
+	__dll_handler = None
+
+	# initialize handler
+	if platform.system() == 'Windows':
+		new_path = 'C:\\PythonLib\\v{}\\{}'.format(VERSION, PLATFORM)
+		if os.environ['PATH'][-1] == ';':
+			os.environ['PATH'] += new_path+';'
+		else:
+			os.environ['PATH'] += ';'+new_path
+		lib_dll_path = find_library('ExampleDLL')
+		print(os.environ['PATH'])
+		print(lib_dll_path)
+		__dll_handler = cdll.LoadLibrary(lib_dll_path)
+	else:
+		raise Exception('Unsupported OS: {}'.format(platform.system()))
+
 	@staticmethod
-	def print_hello():
-		print('Hello!')
+	def mul_op(x, y):
+		c_x = ctypes.c_int(x)
+		c_y = ctypes.c_int(y)
+		return LibWrapper.__dll_handler.mul_op(c_x, c_y)
