@@ -10,7 +10,7 @@ class LibWrapper(object):
 	MINOR = 0
 	BUGFIX = 0
 	VERSION = '{}.{}.{}'.format(MAJOR, MINOR, BUGFIX)
-	PLATFORM = 'x{}'.format(ctypes.sizeof(ctypes.c_voidp) * 8)
+	PLATFORM = 'x64' if ctypes.sizeof(ctypes.c_voidp) * 8 == 64 else 'x86'
 	__dll_handler = None
 
 	# initialize handler
@@ -21,8 +21,6 @@ class LibWrapper(object):
 		else:
 			os.environ['PATH'] += ';'+new_path
 		lib_dll_path = find_library('ExampleDLL')
-		print(os.environ['PATH'])
-		print(lib_dll_path)
 		__dll_handler = cdll.LoadLibrary(lib_dll_path)
 	else:
 		raise Exception('Unsupported OS: {}'.format(platform.system()))
